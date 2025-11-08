@@ -1,0 +1,98 @@
+// PayRPC Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Payment tracking
+model Payment {
+  id            String   @id @default(uuid())
+  requestId     String   @unique
+  signature     String?  @unique
+  amount        Float
+  payerWallet   String
+  endpoint      String
+  verified      Boolean  @default(false)
+  verifiedAt    DateTime?
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([payerWallet])
+  @@index([signature])
+  @@index([createdAt])
+}
+
+// API request tracking
+model ApiRequest {
+  id              String   @id @default(uuid())
+  endpoint        String
+  method          String
+  paymentId       String?
+  responseTimeMs  Int
+  statusCode      Int
+  success         Boolean
+  errorMessage    String?
+  payerWallet     String?
+  userAgent       String?
+  ipAddress       String?
+  createdAt       DateTime @default(now())
+
+  @@index([endpoint])
+  @@index([createdAt])
+  @@index([payerWallet])
+}
+
+// Token burn tracking (for tokenomics)
+model TokenBurn {
+  id            String   @id @default(uuid())
+  amount        Float
+  txSignature   String   @unique
+  usdValue      Float?
+  burnedAt      DateTime @default(now())
+
+  @@index([burnedAt])
+}
+
+// Token buyback tracking
+model TokenBuyback {
+  id            String   @id @default(uuid())
+  solAmount     Float
+  tokenAmount   Float
+  txSignature   String   @unique
+  price         Float
+  boughtAt      DateTime @default(now())
+
+  @@index([boughtAt])
+}
+
+// Wallet analytics (for holder benefits)
+model WalletAnalytics {
+  id                String   @id @default(uuid())
+  walletAddress     String   @unique
+  tokenBalance      Float    @default(0)
+  discountTier      String   @default("none") // none, bronze, silver, gold
+  totalRequests     Int      @default(0)
+  totalSpent        Float    @default(0)
+  firstSeenAt       DateTime @default(now())
+  lastSeenAt        DateTime @default(now())
+
+  @@index([tokenBalance])
+  @@index([discountTier])
+}
+
+// System stats
+model SystemStats {
+  id                String   @id @default(uuid())
+  totalRequests     Int      @default(0)
+  totalRevenue      Float    @default(0)
+  totalBurned       Float    @default(0)
+  uniqueWallets     Int      @default(0)
+  avgResponseTime   Float    @default(0)
+  date              DateTime @unique @default(now())
+
+  @@index([date])
+}
