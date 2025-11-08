@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "env": {
+    "NEXT_PUBLIC_SOLANA_RPC_URL": "@solana_rpc_url",
+    "PAYMENT_WALLET_ADDRESS": "@payment_wallet_address",
+    "PAYMENT_AMOUNT": "0.001",
+    "PAYMENT_TIMEOUT_MS": "30000",
+    "NEXT_PUBLIC_ENABLE_ANALYTICS": "true"
+  }
+}
